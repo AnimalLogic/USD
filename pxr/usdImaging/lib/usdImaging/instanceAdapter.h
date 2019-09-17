@@ -441,6 +441,10 @@ private:
         // instancer, the actual relationship is more like a directed graph.
         SdfPathSet childInstancers;
 
+        // Store nested instances to make removal easier
+        std::vector<SdfPath> nestedInstances;
+
+
         // Proto group containing the instance indexes for each prototype
         // rprim.
         _ProtoGroupPtr protoGroup;
