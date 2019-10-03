@@ -407,6 +407,7 @@ UsdImagingInstanceAdapter::_Populate(UsdPrim const& prim,
     // so now it's safe to re-enter this function to populate the
     // nested instances we discovered.
     TF_FOR_ALL(nestedInstanceIt, nestedInstances) {
+        instancerData.nestedInstances.push_back(nestedInstanceIt->GetPath());
         _Populate(*nestedInstanceIt, index, instancerContext,
                   instancerProxyPath);
     }
@@ -1541,6 +1542,14 @@ UsdImagingInstanceAdapter::_ResyncInstancer(SdfPath const& instancerPath,
             _masterToInstancerMap.erase(it);
             break;
         }
+    }
+
+    if (!TF_VERIFY(instIt != _instancerData.end())) {
+      return;
+    }
+    const SdfPathVector &nestedInstances = instIt->second.nestedInstances;
+    TF_FOR_ALL(nestedIt, nestedInstances) {
+      _ResyncInstancer(*nestedIt, index, false); //hoping the repopulate only needs to happen once
     }
 
     // Blow away the instancer and the associated local data.
